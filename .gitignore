@@ -1,0 +1,111 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+.ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+
+
+# Model files
+*.pth
+*.pt
+*.pkl
+*.h5
+*.ckpt
+*.pb
+*.onnx
+*.tflite
+best_*.pth
+*_model.pth
+model_*.pth
+
+# Data folders
+segmented_dental_adiography/
+data/
+datasets/
+dataset/
+images/
+image/
+*.jpg
+*.jpeg
+*.png
+*.PNG
+*.JPG
+*.JPEG
+*.gif
+*.bmp
+*.tiff
+*.tif
+*.webp
+*.svg
+
+# Training outputs
+training_history.png
+confusion_matrix.png
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.webp
+
+# Logs
+*.log
+logs/
+tensorboard_logs/
+wandb/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+
+# Results and outputs
+results/
+outputs/
+checkpoints/
+saved_models/
+
