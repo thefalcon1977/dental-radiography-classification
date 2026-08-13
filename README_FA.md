@@ -32,6 +32,8 @@ densNet/
 ├── predict_pulp_test.py          # پیش‌بینی pulp_test → CSV
 ├── evaluate_test_predictions.py  # معیارها از CSVهای پیش‌بینی
 ├── requirements.txt
+├── training_history.png          # منحنی‌های loss و accuracy آموزش/اعتبارسنجی
+├── confusion_matrix.png          # ماتریس درهم‌ریختگی مجموعه تست
 ├── slm/                          # چک‌پوینت‌های ذخیره‌شده مدل
 ├── image-testing/
 │   ├── dentin_test/
@@ -66,7 +68,11 @@ segmented_dental_adiography/
 python train.py
 ```
 
-بهترین چک‌پوینت را ذخیره می‌کند و نمودارهای آموزش و ماتریس درهم‌ریختگی را می‌نویسد.
+بهترین چک‌پوینت را ذخیره می‌کند و نمودارهای آموزش و ماتریس درهم‌ریختگی را می‌نویسد:
+
+![تاریخچه آموزش](training_history.png)
+
+![ماتریس درهم‌ریختگی — مجموعه تست](confusion_matrix.png)
 
 ## تشخیص (تصویر کامل)
 

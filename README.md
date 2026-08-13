@@ -32,6 +32,8 @@ densNet/
 ├── predict_pulp_test.py          # Predict pulp_test → CSV
 ├── evaluate_test_predictions.py  # Metrics from prediction CSVs
 ├── requirements.txt
+├── training_history.png          # Train/val loss & accuracy curves
+├── confusion_matrix.png          # Test-set confusion matrix
 ├── slm/                          # Saved model checkpoints
 ├── image-testing/
 │   ├── dentin_test/
@@ -66,7 +68,11 @@ segmented_dental_adiography/
 python train.py
 ```
 
-Saves the best checkpoint and writes training/confusion plots.
+Saves the best checkpoint and writes training/confusion plots:
+
+![Training history](training_history.png)
+
+![Confusion matrix — test set](confusion_matrix.png)
 
 ## Detection (Full Image)
 

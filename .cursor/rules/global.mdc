@@ -1,0 +1,39 @@
+---
+description: Global project standards for dental DenseNet / SLM work
+alwaysApply: true
+---
+
+# densNet — Global Rules
+
+## Project
+- Dental radiography **3-class** classifier: `dentin`, `enamel`, `pulp`
+- Backbone: **DenseNet121** (PyTorch / torchvision)
+- Checkpoints live under `slm/` (small language/vision model weights for this repo)
+- Default inference checkpoint: `slm/resolution_best_densenet_model.pth`
+
+## Class Order (do not reorder)
+```python
+CLASS_NAMES = ["dentin", "enamel", "pulp"]  # 0, 1, 2
+```
+
+## Scripts
+| Script | Role |
+|--------|------|
+| `train.py` | Train DenseNet121 on `segmented_dental_adiography/` |
+| `detect_simple.py` | Sliding-window detection on full radiographs |
+| `predict_*_test.py` | Batch classify `image-testing/{class}_test/` → CSV |
+| `evaluate_test_predictions.py` | Precision / Recall / Accuracy / F1 from CSVs |
+
+## Device Selection
+Always prefer: CUDA → MPS → CPU (same pattern as existing scripts).
+
+## Do Not
+- Do not add FastAPI / web API scaffolding unless explicitly requested
+- Do not commit large binaries: `*.pth`, `pip_packages/`, datasets, raw images
+- Do not invent new class labels or change class index order
+- Do not replace DenseNet121 without an explicit request
+
+## Output Locations
+- Predictions: `test_predictions/`
+- External test images: `image-testing/{dentin,enamel,pulp}_test/`
+- Training data: `segmented_dental_adiography/{train,valid,test}/`

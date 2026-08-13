@@ -1,0 +1,51 @@
+---
+description: Python base standards for densNet scripts
+globs: **/*.py
+alwaysApply: false
+---
+
+# Python Base Rules
+
+## Style
+- Python 3.10+ syntax (`str | None`, `list[str]`, `dict[str, float]`)
+- Prefer `from __future__ import annotations` in new modules
+- Line length target: 88
+- Use clear module docstrings at the top of every script
+
+## Type Hints
+- Annotate all function parameters and return types
+- Prefer named aliases for nested generics used more than once:
+  ```python
+  from typing import TypeAlias
+  ProbList: TypeAlias = list[float]
+  ```
+- Avoid `Any` unless unavoidable
+
+## Docstrings
+- Google-style for public functions/classes
+- Include Args / Returns / Raises when non-obvious
+
+## Imports
+- Group: stdlib → third party → local
+- Prefer explicit imports; avoid `import *`
+- Common stack: `torch`, `torchvision`, `PIL`, `numpy`, `sklearn`, `matplotlib`
+
+## Safety & I/O
+- Check paths exist before load; fail with a clear `SystemExit` or exception message
+- Never hardcode secrets
+- Prefer `pathlib.Path` for new path logic; `os.path` is fine when matching existing scripts
+- Create output directories with `os.makedirs(..., exist_ok=True)`
+
+## Logging / Prints
+- Scripts may use `print` for CLI progress (matches current style)
+- Prefer structured messages: `f"[{status}] {name} pred={label}"`
+- Do not print huge tensors or full image arrays
+
+## Testing / Eval Scripts
+- Keep train / predict / evaluate as separate runnable scripts (no web server)
+- CSV outputs should use `csv` stdlib unless pandas is already required
+- Metrics must match: Precision, Recall, Accuracy, F1 with safe division by zero → `0.0`
+
+## Dependencies
+- Stick to `requirements.txt` unless the user asks to add a package
+- Do not vendor wheels into `pip_packages/` for git
