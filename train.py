@@ -18,10 +18,17 @@ import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix
 from collections import Counter
 
-# Set device - Mac M4 will use MPS (Metal Performance Shaders)
-device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+# Set device: CUDA (NVIDIA) > MPS (Apple Silicon) > CPU
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+elif torch.backends.mps.is_available():
+    device = torch.device("mps")
+else:
+    device = torch.device("cpu")
 print(f"Using device: {device}")
-if device.type == "mps":
+if device.type == "cuda":
+    print(f"✅ CUDA GPU: {torch.cuda.get_device_name(0)}")
+elif device.type == "mps":
     print("✅ MPS (Metal Performance Shaders) is available for GPU acceleration!")
 
 # ============================================================================
@@ -145,28 +152,30 @@ weighted_sampler = WeightedRandomSampler(
 # ============================================================================
 # Data Loaders
 # ============================================================================
-batch_size = 16  # Reduced for Mac M4 memory
-# Note: pin_memory is not supported on MPS, so we set it to False
+batch_size = 16
+use_cuda = device.type == "cuda"
+pin_memory = use_cuda
+num_workers = 2 if use_cuda else 0
 train_loader = DataLoader(
-    train_dataset, 
-    batch_size=batch_size, 
+    train_dataset,
+    batch_size=batch_size,
     sampler=weighted_sampler,
-    num_workers=0,
-    pin_memory=False
+    num_workers=num_workers,
+    pin_memory=pin_memory,
 )
 val_loader = DataLoader(
-    val_dataset, 
-    batch_size=batch_size, 
-    shuffle=False, 
-    num_workers=0,
-    pin_memory=False
+    val_dataset,
+    batch_size=batch_size,
+    shuffle=False,
+    num_workers=num_workers,
+    pin_memory=pin_memory,
 )
 test_loader = DataLoader(
-    test_dataset, 
-    batch_size=batch_size, 
-    shuffle=False, 
-    num_workers=0,
-    pin_memory=False
+    test_dataset,
+    batch_size=batch_size,
+    shuffle=False,
+    num_workers=num_workers,
+    pin_memory=pin_memory,
 )
 
 # ============================================================================

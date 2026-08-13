@@ -52,6 +52,8 @@ model_*.pth
 
 # Data folders
 segmented_dental_adiography/
+pip_packages/
+slm/
 data/
 datasets/
 dataset/
@@ -109,3 +111,8 @@ outputs/
 checkpoints/
 saved_models/
 
+# Offline packages
+pip_packages/
+torch_hub_checkpoints/
+image-testing/
+test_predictions/
