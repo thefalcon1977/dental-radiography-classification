@@ -83,6 +83,11 @@ Thumbs.db
 *.backup
 *~
 
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
 # Sphinx
 docs/_build/
 

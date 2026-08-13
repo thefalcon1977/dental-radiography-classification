@@ -39,6 +39,7 @@ cd docs && make html
 densNet/
 ├── main.py                       # Unified CLI (--train / --predict / …)
 ├── densnet/                      # Shared library (device, model, predict, …)
+├── tests/                        # pytest suite
 ├── requirements.txt
 ├── requirements-dev.txt          # Commitizen + pre-commit
 ├── pyproject.toml                # Project metadata + Commitizen
@@ -215,6 +216,12 @@ Lint and format Python with Ruff (also runs via pre-commit):
 ```bash
 ruff check .
 ruff format
+```
+
+Run the test suite:
+
+```bash
+pytest
 ```
 
 Run all hooks on the tree:

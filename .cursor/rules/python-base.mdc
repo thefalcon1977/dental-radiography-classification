@@ -43,7 +43,8 @@ alwaysApply: false
 - Do not print huge tensors or full image arrays
 
 ## Testing / Eval Scripts
-- Keep train / predict / evaluate as separate runnable scripts (no web server)
+- Tests live in `tests/` and run with `pytest` (see `[tool.pytest.ini_options]`)
+- Keep train / predict / evaluate as separate CLI actions on `main.py` (no web server)
 - CSV outputs should use `csv` stdlib unless pandas is already required
 - Metrics must match: Precision, Recall, Accuracy, F1 with safe division by zero → `0.0`
 

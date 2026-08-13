@@ -39,6 +39,7 @@ cd docs && make html
 densNet/
 ├── main.py                       # CLI یکپارچه (--train / --predict / …)
 ├── densnet/                      # کتابخانه مشترک (device، model، predict، …)
+├── tests/                        # مجموعه تست pytest
 ├── requirements.txt
 ├── requirements-dev.txt          # Commitizen + pre-commit
 ├── pyproject.toml                # فراداده پروژه + Commitizen
@@ -215,6 +216,12 @@ cz commit
 ```bash
 ruff check .
 ruff format
+```
+
+اجرای مجموعه تست:
+
+```bash
+pytest
 ```
 
 اجرای همهٔ هوک‌ها روی کل درخت:
