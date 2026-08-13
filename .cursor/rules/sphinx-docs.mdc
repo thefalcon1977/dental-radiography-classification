@@ -1,0 +1,108 @@
+---
+description: Sphinx documentation layout, autodoc, and build conventions for densNet
+globs: docs/**/*,**/conf.py,**/*.rst
+alwaysApply: false
+---
+
+# Sphinx Documentation Rules
+
+## When This Applies
+- Creating or editing Sphinx docs under `docs/`
+- Adding/updating `docs/conf.py`, `.rst`, or MyST Markdown pages
+- Wiring autodoc to project scripts (`train.py`, `detect_simple.py`, `predict_*_test.py`, `evaluate_test_predictions.py`)
+
+## Layout
+Prefer a flat, script-oriented tree (no web API docs):
+
+```text
+docs/
+├── conf.py
+├── index.rst                 # or index.md with MyST
+├── usage/
+│   ├── training.rst
+│   ├── detection.rst
+│   ├── prediction.rst
+│   └── evaluation.rst
+├── api/
+│   └── modules.rst           # autodoc stubs
+└── _static/                  # optional: confusion_matrix.png, training_history.png
+```
+
+- Keep English as the Sphinx primary language; Persian narrative stays in `README_FA.md` unless the user asks for bilingual Sphinx
+- Link out to root `README.md` / `README_FA.md` instead of duplicating long setup text
+
+## Extensions
+Enable only what you need:
+
+```python
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",      # Google-style docstrings (match python-base)
+    "sphinx.ext.viewcode",
+    "sphinx.ext.intersphinx",   # optional: Python / PyTorch refs
+]
+```
+
+- Prefer **Napoleon + Google** docstrings over NumPy style
+- MyST (`myst_parser`) is OK if the user wants Markdown pages; otherwise stick to `.rst`
+- Do **not** add FastAPI / HTTP / OpenAPI Sphinx extensions
+
+## `conf.py` Conventions
+- `project = "densNet"`
+- `author` / `copyright` as already used in the repo (or leave placeholders if unset)
+- Set `sys.path` so autodoc can import top-level scripts:
+
+```python
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+```
+
+- Autodoc defaults:
+  - `autodoc_typehints = "description"`
+  - `napoleon_google_docstring = True`
+  - `napoleon_numpy_docstring = False`
+- Theme: `sphinx_rtd_theme` or Alabaster; do not add a heavy custom theme unless asked
+- Exclude build artifacts: `_build`, `.venv`, `slm`, datasets
+
+## What To Document
+| Topic | Source of truth |
+|-------|-----------------|
+| Classes / order | `CLASS_NAMES = ["dentin", "enamel", "pulp"]` |
+| Checkpoint | `slm/resolution_best_densenet_model.pth` |
+| Train data | `segmented_dental_adiography/{train,valid,test}/` |
+| External tests | `image-testing/{dentin,enamel,pulp}_test/` |
+| Metrics | Precision, Recall, Accuracy, F1 (same formulas as evaluate script) |
+| Plots | Reuse `training_history.png`, `confusion_matrix.png` via `_static/` or repo-root links |
+
+Document **CLI usage and public functions**, not private training loops line-by-line.
+
+## Autodoc Hygiene
+- Module docstrings at the top of every documented script
+- Public functions: Args / Returns / Raises (Google style)
+- Skip undocumented private helpers (`_foo`) unless they are part of the public contract
+- If a script is not import-safe (runs on import), fix with `if __name__ == "__main__":` before enabling autodoc on it — do not wrap autodoc hacks around side-effectful imports
+
+## Build
+```bash
+cd docs && sphinx-build -b html . _build/html
+# or: make html
+```
+
+- Output belongs in `docs/_build/` (gitignored)
+- Do not commit `_build/`, large datasets, or `*.pth` into docs
+- Optional: add a short “Building the docs” subsection to `README.md` when Sphinx is introduced
+
+## Writing Style
+- Imperative, short sections; one purpose per page
+- Prefer code blocks for commands the user can copy
+- Keep class index order and metric formulas consistent with `global` / DenseNet rules
+- When adding figures, use existing project plots; do not invent metrics screenshots
+
+## Do Not
+- Scaffold FastAPI / REST API reference pages
+- Change class labels or DenseNet121 defaults “for documentation clarity”
+- Vendor Sphinx themes or large binary assets into git
+- Duplicate full evaluation tables in both README and Sphinx unless one clearly links to the other
