@@ -18,7 +18,7 @@ Run
 
 .. code-block:: bash
 
-   python train.py
+   python main.py --train
 
 Saves the best checkpoint by validation accuracy and writes:
 

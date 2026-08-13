@@ -1,55 +1,48 @@
 API reference
 =============
 
-Autodoc stubs for the top-level scripts. Prefer the Usage pages for CLI
-workflows.
+Shared library under ``densnet/``. The only CLI entry point is ``main.py``.
 
-Training
---------
+Package
+-------
 
-.. automodule:: train
+.. automodule:: densnet.constants
    :members:
    :undoc-members:
+
+.. automodule:: densnet.device
+   :members:
+
+.. automodule:: densnet.transforms
+   :members:
+
+.. automodule:: densnet.model
+   :members:
+
+.. automodule:: densnet.dataset
+   :members:
    :show-inheritance:
-   :exclude-members: main
 
-Detection
----------
-
-.. automodule:: detect_simple
+.. automodule:: densnet.images
    :members:
-   :undoc-members:
-   :show-inheritance:
-   :exclude-members: get_model
 
-Evaluation
-----------
-
-.. automodule:: evaluate_test_predictions
+.. automodule:: densnet.predict_batch
    :members:
-   :undoc-members:
-   :exclude-members: main
 
-Dentin prediction
------------------
-
-.. automodule:: predict_dentin_test
+.. automodule:: densnet.detect
    :members:
-   :undoc-members:
-   :exclude-members: main
 
-Enamel prediction
------------------
-
-.. automodule:: predict_enamel_test
+.. automodule:: densnet.metrics
    :members:
-   :undoc-members:
-   :exclude-members: main
 
-Pulp prediction
----------------
-
-.. automodule:: predict_pulp_test
+.. automodule:: densnet.train_loop
    :members:
-   :undoc-members:
-   :exclude-members: main
+
+.. automodule:: densnet.train_runner
+   :members:
+
+CLI
+---
+
+.. automodule:: main
+   :members:

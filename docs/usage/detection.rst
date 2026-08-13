@@ -21,7 +21,7 @@ Run
 
 .. code-block:: bash
 
-   python detect_simple.py
-   # Enter image path when prompted
+   python main.py --detect
+   # or: python main.py --detect --image path/to/xray.png
 
 Each detection is ``(x1, y1, x2, y2, class_name, confidence)``.

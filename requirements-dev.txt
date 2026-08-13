@@ -1,0 +1,4 @@
+# Development tools (Commitizen + pre-commit + Ruff). Does not include PyTorch.
+pre-commit>=4.3.0
+commitizen>=4.17.0
+ruff>=0.16.2

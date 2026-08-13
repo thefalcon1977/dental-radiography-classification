@@ -16,13 +16,36 @@ alwaysApply: true
 CLASS_NAMES = ["dentin", "enamel", "pulp"]  # 0, 1, 2
 ```
 
-## Scripts
-| Script | Role |
+## Modular & Pythonic
+- Prefer **small, single-purpose functions/modules** over long monolithic scripts
+- Keep import-safe modules: definitions at top level; side effects only under `if __name__ == "__main__":` / `main()`
+- Shared logic lives in the **`densnet/`** package (device, constants, transforms, model load, predict, detect, metrics, dataset, train)
+- **`main.py` is the only CLI** — do not add parallel root scripts for train/predict/detect/evaluate
+- Idiomatic Python 3.10+: type hints, `pathlib` for new path logic, explicit names, no `import *`
+- Prefer clear data flow (`load → transform → predict → write`) over deep nesting or god objects
+
+## Package (`densnet/`)
+| Module | Role |
 |--------|------|
-| `train.py` | Train DenseNet121 on `segmented_dental_adiography/` |
-| `detect_simple.py` | Sliding-window detection on full radiographs |
-| `predict_*_test.py` | Batch classify `image-testing/{class}_test/` → CSV |
-| `evaluate_test_predictions.py` | Precision / Recall / Accuracy / F1 from CSVs |
+| `constants.py` | `CLASS_NAMES`, colors, default checkpoint, paths |
+| `device.py` | CUDA → MPS → CPU |
+| `transforms.py` | train / eval ImageNet transforms |
+| `model.py` | create / load DenseNet121 |
+| `dataset.py` | `DentalRadiographyDataset` |
+| `predict_batch.py` | folder → CSV predictions |
+| `detect.py` | sliding-window detection |
+| `metrics.py` | Precision / Recall / Accuracy / F1 |
+| `train_loop.py` | `train_epoch` / `validate` |
+| `train_runner.py` | full train → test → plots pipeline |
+
+## CLI
+```bash
+python main.py --help
+python main.py --train
+python main.py --predict all|dentin|enamel|pulp
+python main.py --evaluate
+python main.py --detect [--image PATH]
+```
 
 ## Device Selection
 Always prefer: CUDA → MPS → CPU (same pattern as existing scripts).
@@ -32,6 +55,8 @@ Always prefer: CUDA → MPS → CPU (same pattern as existing scripts).
 - Do not commit large binaries: `*.pth`, `pip_packages/`, datasets, raw images
 - Do not invent new class labels or change class index order
 - Do not replace DenseNet121 without an explicit request
+- Do not dump unrelated helpers into one mega-file; keep modules cohesive
+- Do not recreate removed root scripts (`train.py`, `detect_simple.py`, `predict_*_test.py`, `evaluate_test_predictions.py`)
 
 ## Output Locations
 - Predictions: `test_predictions/`

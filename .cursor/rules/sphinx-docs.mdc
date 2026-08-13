@@ -9,7 +9,7 @@ alwaysApply: false
 ## When This Applies
 - Creating or editing Sphinx docs under `docs/`
 - Adding/updating `docs/conf.py`, `.rst`, or MyST Markdown pages
-- Wiring autodoc to project scripts (`train.py`, `detect_simple.py`, `predict_*_test.py`, `evaluate_test_predictions.py`)
+- Wiring autodoc to `main.py` and the `densnet/` package
 
 ## Layout
 Prefer a flat, script-oriented tree (no web API docs):

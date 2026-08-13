@@ -18,7 +18,7 @@ Run
 
 .. code-block:: bash
 
-   python evaluate_test_predictions.py
+   python main.py --evaluate
 
 Writes:
 

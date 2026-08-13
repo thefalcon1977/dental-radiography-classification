@@ -10,6 +10,7 @@ alwaysApply: false
 - Python 3.10+ syntax (`str | None`, `list[str]`, `dict[str, float]`)
 - Prefer `from __future__ import annotations` in new modules
 - Line length target: 88
+- Lint and format with **Ruff** (`ruff check` / `ruff format`; config in `pyproject.toml`)
 - Use clear module docstrings at the top of every script
 
 ## Type Hints

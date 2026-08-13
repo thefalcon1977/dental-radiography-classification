@@ -1,28 +1,27 @@
 ---
-description: DenseNet121 / SLM conventions for train, detect, predict, evaluate
-globs: "*.py"
+description: DenseNet121 / SLM conventions for densnet package and main.py CLI
+globs: "*.py,densnet/**/*.py"
 alwaysApply: false
 ---
 
 # DenseNet / SLM Rules
 
+Shared implementation lives in ``densnet/``. The only CLI is ``main.py``.
+
 ## Model
-- Architecture: `torchvision.models.densenet121`
-- Replace classifier head for **3** classes:
-  ```python
-  model = models.densenet121(weights=None)  # or ImageNet for training
-  model.classifier = nn.Linear(model.classifier.in_features, 3)
-  ```
+- Architecture: `torchvision.models.densenet121` via `densnet.model.create_densenet121` / `load_checkpoint`
+- Replace classifier head for **3** classes (handled in `densnet.model`)
 - Load checkpoints with `weights_only=False` when the file may wrap a dict
 - Support both raw `state_dict` and `{"model_state_dict": ...}` checkpoints
 
 ## Checkpoint Paths
 - Directory: `slm/`
-- Preferred inference weights: `slm/resolution_best_densenet_model.pth`
+- Preferred inference weights: `slm/resolution_best_densenet_model.pth` (`densnet.constants.DEFAULT_MODEL_PATH`)
 - Other local variants (`best_densenet_model.pth`, `crop_best_densenet_model.pth`) exist — do not switch defaults silently
-- Model files are gitignored; document the expected path in scripts/README only
+- Model files are gitignored; document the expected path in README only
 
 ## Classes & Colors
+Use `densnet.constants.CLASS_NAMES` / `CLASS_COLORS` — do not redefine elsewhere.
 ```python
 CLASS_NAMES = ["dentin", "enamel", "pulp"]
 CLASS_COLORS = {
@@ -33,57 +32,46 @@ CLASS_COLORS = {
 ```
 
 ## Preprocessing (classification)
-Match training / val transforms unless changing the model contract:
-```python
-transforms.Compose([
-    transforms.Resize((256, 256)),
-    transforms.CenterCrop(224),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                         std=[0.229, 0.224, 0.225]),
-])
-```
+Use `densnet.transforms.eval_transform()` / `train_transform()` — match that contract unless changing the model.
 - Always `Image.open(...).convert("RGB")`
 
-## Detection (`detect_simple.py`)
+## Detection
+- Logic in `densnet.detect` (`detect`, `run_detect_cli`)
+- CLI: `python main.py --detect [--image PATH]`
 - Sliding window: default `PATCH_SIZE=224`, `STRIDE=56`
 - Filter with `CONFIDENCE_THRESHOLD` then NMS (`NMS_IOU_THRESHOLD`)
-- Upscale tiny images so the window can run; map boxes back to original scale
 - Return `(image_with_boxes, detections)` where each detection is
   `(x1, y1, x2, y2, class_name, confidence)`
 
-## Batch Prediction (`predict_*_test.py`)
-- One script (or clear `--class` mode) per tissue folder under `image-testing/`
-- Ground-truth class comes from the folder / script target
+## Batch Prediction
+- `densnet.predict_batch.run_folder_predictions(target_class)`
+- CLI: `python main.py --predict dentin|enamel|pulp|all`
 - CSV columns (stable contract):
   `file,class_name,target,target_label,pred_idx,pred_label,prob_positive`
 - `prob_positive` = softmax probability of the **target** class (not max class)
 - Write under `test_predictions/`
 
-## Evaluation (`evaluate_test_predictions.py`)
-- Aggregate dentin + enamel + pulp CSVs
+## Evaluation
+- `densnet.metrics.run_evaluation()`
+- CLI: `python main.py --evaluate`
 - One-vs-rest TP/FP/TN/FN per class
-- Formulas:
-  - Precision = TP / (TP + FP)
-  - Recall = TP / (TP + FN)
-  - Accuracy = (TP + TN) / (TP + TN + FP + FN)
-  - F1 = 2 * P * R / (P + R)
-- Also report overall accuracy and confusion matrix
-- Prefer writing both `.csv` metrics and a human-readable `.txt` / `.md` report
+- Formulas: Precision, Recall, Accuracy, F1 (safe div → `0.0`)
 
-## Training (`train.py`)
+## Training
+- Pipeline: `densnet.train_runner.run_training()`
+- Dataset: `densnet.dataset.DentalRadiographyDataset`
+- Loop helpers: `densnet.train_loop.train_epoch` / `validate`
+- CLI: `python main.py --train`
 - Dataset folders: `segmented_dental_adiography/{train,valid,test}/{dentin,enamel,pulp}/`
-- Use class weights / weighted sampling when imbalance matters
 - Save **best** checkpoint by validation accuracy
-- Keep augmentation on train only; val/test use center-crop normalize pipeline
+- Keep augmentation on train only; val/test use eval transform
 
 ## Performance
 - Use `torch.no_grad()` for all inference
 - `model.eval()` before predict/detect/evaluate
 - Batch when easy; single-image loops are OK for small test folders (~75 imgs)
-- Do not load full datasets into memory as raw PIL lists when a Dataset/DataLoader fits
 
 ## When Changing Models
 - Ask before swapping DenseNet121 for another backbone
 - Ask before changing class count, preprocessing, or checkpoint filename defaults
-- Update README + predict/eval scripts together if the contract changes
+- Update README + `densnet/` + `main.py` together if the contract changes

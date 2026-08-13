@@ -37,13 +37,12 @@ cd docs && make html
 
 ```
 densNet/
-├── train.py                      # آموزش DenseNet121
-├── detect_simple.py              # تشخیص پنجره لغزان (تعاملی)
-├── predict_dentin_test.py        # پیش‌بینی dentin_test → CSV
-├── predict_enamel_test.py        # پیش‌بینی enamel_test → CSV
-├── predict_pulp_test.py          # پیش‌بینی pulp_test → CSV
-├── evaluate_test_predictions.py  # معیارها از CSVهای پیش‌بینی
+├── main.py                       # CLI یکپارچه (--train / --predict / …)
+├── densnet/                      # کتابخانه مشترک (device، model، predict، …)
 ├── requirements.txt
+├── requirements-dev.txt          # Commitizen + pre-commit
+├── pyproject.toml                # فراداده پروژه + Commitizen
+├── .pre-commit-config.yaml       # هوک‌های Git
 ├── docs/                         # مستندات Sphinx
 ├── training_history.png          # منحنی‌های loss و accuracy آموزش/اعتبارسنجی
 ├── confusion_matrix.png          # ماتریس درهم‌ریختگی مجموعه تست
@@ -78,7 +77,7 @@ segmented_dental_adiography/
 ```
 
 ```bash
-python train.py
+python main.py --train
 ```
 
 بهترین چک‌پوینت را ذخیره می‌کند و نمودارهای آموزش و ماتریس درهم‌ریختگی را می‌نویسد:
@@ -94,8 +93,8 @@ python train.py
 - قرمز = عاج (dentin) · سبز = مینا (enamel) · آبی = پالپ (pulp)
 
 ```bash
-python detect_simple.py
-# مسیر تصویر را وقتی پرسیده شد وارد کنید
+python main.py --detect
+# یا: python main.py --detect --image path/to/xray.png
 ```
 
 ## تصاویر تست خارجی (`image-testing/`)
@@ -120,34 +119,34 @@ image-testing/
 
 ## پیش‌بینی دسته‌ای تست
 
-هر اسکریپت همه تصاویر پوشه متناظر در `image-testing/*_test` را طبقه‌بندی می‌کند و یک CSV در `test_predictions/` می‌نویسد.
+همه تصاویر پوشه متناظر در `image-testing/*_test` را طبقه‌بندی می‌کند و یک CSV در `test_predictions/` می‌نویسد.
 
 ستون‌های CSV (هم‌شکل با خروجی‌های ارزیابی خارجی):
 
 `file,class_name,target,target_label,pred_idx,pred_label,prob_positive`
 
-`prob_positive` احتمال کلاس هدف همان اسکریپت است (P(dentin)، P(enamel) یا P(pulp)).
+`prob_positive` احتمال کلاس هدف است (P(dentin)، P(enamel) یا P(pulp)).
 
 ```bash
-python predict_dentin_test.py
-python predict_enamel_test.py
-python predict_pulp_test.py
+python main.py --predict all
+# یا یک کلاس: dentin | enamel | pulp
+python main.py --predict dentin
 ```
 
 خروجی‌ها:
 
-| اسکریپت | ورودی | خروجی |
+| دستور | ورودی | خروجی |
 |--------|-------|--------|
-| `predict_dentin_test.py` | `image-testing/dentin_test/` | `test_predictions/dentin_test_predictions.csv` |
-| `predict_enamel_test.py` | `image-testing/enamel_test/` | `test_predictions/enamel_test_predictions.csv` |
-| `predict_pulp_test.py` | `image-testing/pulp_test/` | `test_predictions/pulp_test_predictions.csv` |
+| `--predict dentin` | `image-testing/dentin_test/` | `test_predictions/dentin_test_predictions.csv` |
+| `--predict enamel` | `image-testing/enamel_test/` | `test_predictions/enamel_test_predictions.csv` |
+| `--predict pulp` | `image-testing/pulp_test/` | `test_predictions/pulp_test_predictions.csv` |
 
 ## معیارهای ارزیابی
 
 پس از وجود سه CSV پیش‌بینی:
 
 ```bash
-python evaluate_test_predictions.py
+python main.py --evaluate
 ```
 
 از این فرمول‌ها استفاده می‌کند:
@@ -179,26 +178,56 @@ python evaluate_test_predictions.py
 ## گردش کار پیشنهادی
 
 ```bash
-# ۱) آموزش (اختیاری اگر چک‌پوینت از قبل موجود است)
-python train.py
-
-# ۲) پیش‌بینی دسته‌ای هر پوشه تست
-python predict_dentin_test.py
-python predict_enamel_test.py
-python predict_pulp_test.py
-
-# ۳) ساخت گزارش معیارها
-python evaluate_test_predictions.py
-
-# ۴) اختیاری: بررسی یک رادیوگراف کامل
-python detect_simple.py
+python main.py --help
+python main.py --train
+python main.py --predict all
+python main.py --evaluate
+python main.py --detect --image path/to/xray.png
 ```
 
 ## نکات
 
 - دستگاه به‌صورت خودکار انتخاب می‌شود: CUDA → MPS → CPU
-- اسکریپت‌های پیش‌بینی تصاویر `.png` / `.jpg` / `.jpeg` را می‌پذیرند
-- اگر چک‌پوینت مدل را عوض کردید، قبل از ارزیابی دوباره پیش‌بینی‌ها را اجرا کنید
+- پیش‌بینی تصاویر `.png` / `.jpg` / `.jpeg` را می‌پذیرد
+- اگر چک‌پوینت مدل را عوض کردید، قبل از `--evaluate` دوباره `--predict` را اجرا کنید
+
+## توسعه
+
+Commitizen (`cz commit`)، pre-commit و Ruff را نصب کنید و هوک‌های Git را فعال کنید:
+
+```bash
+pip install -r requirements-dev.txt
+pre-commit install
+```
+
+`pre-commit install` هم هوک `pre-commit` و هم `commit-msg` را ثبت می‌کند (طبق `default_install_hook_types` در `.pre-commit-config.yaml`).
+
+کامیت‌های متعارف را با ویزارد Commitizen بنویسید:
+
+```bash
+cz commit
+```
+
+هوک‌ها فایل‌های staged را بررسی می‌کنند و پیام‌هایی که از [Conventional Commits](https://www.conventionalcommits.org/) پیروی نکنند رد می‌شوند (`feat`، `fix`، `docs`، `style`، `refactor`، `perf`، `test`، `build`، `ci`، `chore` و …).
+
+لینت و فرمت پایتون با Ruff (از طریق pre-commit هم اجرا می‌شود):
+
+```bash
+ruff check .
+ruff format
+```
+
+اجرای همهٔ هوک‌ها روی کل درخت:
+
+```bash
+pre-commit run --all-files
+```
+
+بالا بردن نسخه و به‌روزرسانی changelog از تاریخچهٔ کامیت‌های متعارف:
+
+```bash
+cz bump
+```
 
 ## مجوز
 

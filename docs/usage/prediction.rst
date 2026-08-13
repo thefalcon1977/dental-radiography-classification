@@ -27,14 +27,16 @@ Run
 
 .. code-block:: bash
 
-   python predict_dentin_test.py
-   python predict_enamel_test.py
-   python predict_pulp_test.py
+   python main.py --predict all
+   # or one class:
+   python main.py --predict dentin
+   python main.py --predict enamel
+   python main.py --predict pulp
 
 =======  ==============================  =========================================
-Script   Input                           Output
+Command  Input                           Output
 =======  ==============================  =========================================
-dentin   ``image-testing/dentin_test/``  ``test_predictions/dentin_test_predictions.csv``
-enamel   ``image-testing/enamel_test/``  ``test_predictions/enamel_test_predictions.csv``
-pulp     ``image-testing/pulp_test/``    ``test_predictions/pulp_test_predictions.csv``
+``--predict dentin``   ``image-testing/dentin_test/``  ``test_predictions/dentin_test_predictions.csv``
+``--predict enamel``   ``image-testing/enamel_test/``  ``test_predictions/enamel_test_predictions.csv``
+``--predict pulp``     ``image-testing/pulp_test/``    ``test_predictions/pulp_test_predictions.csv``
 =======  ==============================  =========================================

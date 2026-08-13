@@ -37,13 +37,12 @@ cd docs && make html
 
 ```
 densNet/
-├── train.py                      # Train DenseNet121
-├── detect_simple.py              # Sliding-window detection (interactive)
-├── predict_dentin_test.py        # Predict dentin_test → CSV
-├── predict_enamel_test.py        # Predict enamel_test → CSV
-├── predict_pulp_test.py          # Predict pulp_test → CSV
-├── evaluate_test_predictions.py  # Metrics from prediction CSVs
+├── main.py                       # Unified CLI (--train / --predict / …)
+├── densnet/                      # Shared library (device, model, predict, …)
 ├── requirements.txt
+├── requirements-dev.txt          # Commitizen + pre-commit
+├── pyproject.toml                # Project metadata + Commitizen
+├── .pre-commit-config.yaml       # Git hooks
 ├── docs/                         # Sphinx documentation
 ├── training_history.png          # Train/val loss & accuracy curves
 ├── confusion_matrix.png          # Test-set confusion matrix
@@ -78,7 +77,7 @@ segmented_dental_adiography/
 ```
 
 ```bash
-python train.py
+python main.py --train
 ```
 
 Saves the best checkpoint and writes training/confusion plots:
@@ -94,8 +93,8 @@ Interactive sliding-window scan with colored boxes:
 - Red = dentin · Green = enamel · Blue = pulp
 
 ```bash
-python detect_simple.py
-# Enter image path when prompted
+python main.py --detect
+# or: python main.py --detect --image path/to/xray.png
 ```
 
 ## External Test Images (`image-testing/`)
@@ -120,34 +119,34 @@ Supported formats: `.png`, `.jpg`, `.jpeg` (any casing).
 
 ## Batch Test Predictions
 
-Each script classifies all images in the matching `image-testing/*_test` folder and writes a CSV under `test_predictions/`.
+Classify all images in the matching `image-testing/*_test` folder and write a CSV under `test_predictions/`.
 
 CSV columns (same shape as external evaluation exports):
 
 `file,class_name,target,target_label,pred_idx,pred_label,prob_positive`
 
-`prob_positive` is the probability of that script’s target class (P(dentin), P(enamel), or P(pulp)).
+`prob_positive` is the probability of the target class (P(dentin), P(enamel), or P(pulp)).
 
 ```bash
-python predict_dentin_test.py
-python predict_enamel_test.py
-python predict_pulp_test.py
+python main.py --predict all
+# or one class: dentin | enamel | pulp
+python main.py --predict dentin
 ```
 
 Outputs:
 
-| Script | Input | Output |
-|--------|-------|--------|
-| `predict_dentin_test.py` | `image-testing/dentin_test/` | `test_predictions/dentin_test_predictions.csv` |
-| `predict_enamel_test.py` | `image-testing/enamel_test/` | `test_predictions/enamel_test_predictions.csv` |
-| `predict_pulp_test.py` | `image-testing/pulp_test/` | `test_predictions/pulp_test_predictions.csv` |
+| Command | Input | Output |
+|---------|-------|--------|
+| `--predict dentin` | `image-testing/dentin_test/` | `test_predictions/dentin_test_predictions.csv` |
+| `--predict enamel` | `image-testing/enamel_test/` | `test_predictions/enamel_test_predictions.csv` |
+| `--predict pulp` | `image-testing/pulp_test/` | `test_predictions/pulp_test_predictions.csv` |
 
 ## Evaluation Metrics
 
 After the three prediction CSVs exist:
 
 ```bash
-python evaluate_test_predictions.py
+python main.py --evaluate
 ```
 
 Uses:
@@ -179,26 +178,56 @@ Writes:
 ## Typical Workflow
 
 ```bash
-# 1) Train (optional if checkpoint already exists)
-python train.py
-
-# 2) Batch-predict each test folder
-python predict_dentin_test.py
-python predict_enamel_test.py
-python predict_pulp_test.py
-
-# 3) Build metrics report
-python evaluate_test_predictions.py
-
-# 4) Optional: inspect a full radiograph
-python detect_simple.py
+python main.py --help
+python main.py --train
+python main.py --predict all
+python main.py --evaluate
+python main.py --detect --image path/to/xray.png
 ```
 
 ## Notes
 
 - Device is chosen automatically: CUDA → MPS → CPU
-- Prediction scripts expect images as `.png` / `.jpg` / `.jpeg`
-- Re-run predictions before evaluation if you change the model checkpoint
+- Predictions expect images as `.png` / `.jpg` / `.jpeg`
+- Re-run `--predict` before `--evaluate` if you change the model checkpoint
+
+## Development
+
+Install Commitizen (`cz commit`), pre-commit, and Ruff, then enable Git hooks:
+
+```bash
+pip install -r requirements-dev.txt
+pre-commit install
+```
+
+`pre-commit install` registers both the `pre-commit` and `commit-msg` hooks (see `default_install_hook_types` in `.pre-commit-config.yaml`).
+
+Write [Conventional Commits](https://www.conventionalcommits.org/) with the Commitizen prompt:
+
+```bash
+cz commit
+```
+
+Hooks then lint staged files and reject commit messages that are not conventional (`feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, …).
+
+Lint and format Python with Ruff (also runs via pre-commit):
+
+```bash
+ruff check .
+ruff format
+```
+
+Run all hooks on the tree:
+
+```bash
+pre-commit run --all-files
+```
+
+Bump the version and changelog from conventional commit history:
+
+```bash
+cz bump
+```
 
 ## License
 
