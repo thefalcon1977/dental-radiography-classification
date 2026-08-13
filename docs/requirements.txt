@@ -1,0 +1,3 @@
+# Lightweight deps for building Sphinx docs (CI / local docs-only).
+sphinx>=7.0.0
+sphinx-rtd-theme>=2.0.0

@@ -21,6 +21,18 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Documentation (Sphinx)
+
+Online: [Sphinx docs (GitHub Pages)](https://thefalcon1977.github.io/dental-radiography-classification/)
+
+Build locally:
+
+```bash
+pip install -r docs/requirements.txt
+cd docs && make html
+# open docs/_build/html/index.html
+```
+
 ## Project Layout
 
 ```
@@ -32,6 +44,7 @@ densNet/
 ├── predict_pulp_test.py          # Predict pulp_test → CSV
 ├── evaluate_test_predictions.py  # Metrics from prediction CSVs
 ├── requirements.txt
+├── docs/                         # Sphinx documentation
 ├── training_history.png          # Train/val loss & accuracy curves
 ├── confusion_matrix.png          # Test-set confusion matrix
 ├── slm/                          # Saved model checkpoints

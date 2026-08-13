@@ -83,6 +83,9 @@ Thumbs.db
 *.backup
 *~
 
+# Sphinx
+docs/_build/
+
 # Results and outputs
 results/
 outputs/

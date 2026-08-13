@@ -21,6 +21,18 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## مستندات (Sphinx)
+
+نسخه آنلاین: [مستندات Sphinx (GitHub Pages)](https://thefalcon1977.github.io/dental-radiography-classification/)
+
+ساخت محلی:
+
+```bash
+pip install -r docs/requirements.txt
+cd docs && make html
+# فایل docs/_build/html/index.html را باز کنید
+```
+
 ## ساختار پروژه
 
 ```
@@ -32,6 +44,7 @@ densNet/
 ├── predict_pulp_test.py          # پیش‌بینی pulp_test → CSV
 ├── evaluate_test_predictions.py  # معیارها از CSVهای پیش‌بینی
 ├── requirements.txt
+├── docs/                         # مستندات Sphinx
 ├── training_history.png          # منحنی‌های loss و accuracy آموزش/اعتبارسنجی
 ├── confusion_matrix.png          # ماتریس درهم‌ریختگی مجموعه تست
 ├── slm/                          # چک‌پوینت‌های ذخیره‌شده مدل

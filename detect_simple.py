@@ -31,10 +31,19 @@ elif torch.backends.mps.is_available():
     device = torch.device("mps")
 else:
     device = torch.device("cpu")
-print(f"Using device: {device}")
+
+_model = None
+
+transform = transforms.Compose([
+    transforms.Resize((256, 256)),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
 
 
 def load_model():
+    """Load DenseNet121 checkpoint for 3-class tissue detection."""
     model = models.densenet121(weights=None)
     num_features = model.classifier.in_features
     model.classifier = nn.Linear(num_features, 3)
@@ -50,16 +59,12 @@ def load_model():
     return model
 
 
-print("Loading model...")
-model = load_model()
-print("✅ Model loaded!")
-
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),
-    transforms.CenterCrop(224),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
+def get_model():
+    """Return a cached model instance, loading on first use."""
+    global _model
+    if _model is None:
+        _model = load_model()
+    return _model
 
 
 def _slide_positions(length, patch_size, stride):
@@ -135,6 +140,7 @@ def detect(image_path, confidence_threshold=CONFIDENCE_THRESHOLD):
 
     detections = []
     print("Scanning image...")
+    model = get_model()
 
     for y in _slide_positions(h, PATCH_SIZE, STRIDE):
         for x in _slide_positions(w, PATCH_SIZE, STRIDE):
@@ -194,6 +200,11 @@ def draw_detections(image, detections):
 
 
 if __name__ == '__main__':
+    print(f"Using device: {device}")
+    print("Loading model...")
+    get_model()
+    print("✅ Model loaded!")
+
     image_path = input("Enter image path: ").strip()
 
     if not os.path.exists(image_path):
