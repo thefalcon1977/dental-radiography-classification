@@ -27,9 +27,10 @@ ENV/
 env/
 .ENV/
 
-# IDE
+# IDE / editor
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
