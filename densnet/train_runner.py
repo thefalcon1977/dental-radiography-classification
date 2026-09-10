@@ -31,7 +31,31 @@ def run_training(
     batch_size: int = 16,
     patience: int = 7,
 ) -> None:
-    """Train DenseNet121, evaluate on the test set, and write plots."""
+    """Train DenseNet121, evaluate on the test set, and write plots.
+
+    Final recipe (defaults in this function):
+
+    * Optimizer: AdamW, ``weight_decay=1e-4``
+    * Learning rate: ``1e-4`` (backbone), ``1e-3`` (classifier head)
+    * Batch size: 16
+    * Epochs: 30 maximum; early stopping after 7 epochs with no gain in
+      validation accuracy
+    * LR scheduler: ``ReduceLROnPlateau`` on validation loss (factor 0.5,
+      patience 3)
+
+    Images are loaded from **pre-split** ``train`` / ``valid`` / ``test``
+    folders. This function does not randomly split a single pool of images.
+    Augmentation is applied on train only via :func:`train_transform`.
+
+    Args:
+        train_dir: ``{class_name}/*`` training patches.
+        val_dir: Validation patches (no augmentation).
+        test_dir: Held-out test patches (no augmentation).
+        best_model_path: Where to save the best validation-accuracy checkpoint.
+        num_epochs: Maximum epochs (early stopping may stop sooner).
+        batch_size: Mini-batch size for train, val, and test loaders.
+        patience: Epochs without validation-accuracy improvement before stop.
+    """
     device = get_device()
     print(f"Using device: {describe_device(device)}")
 

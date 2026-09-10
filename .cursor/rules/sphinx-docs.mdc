@@ -73,7 +73,9 @@ sys.path.insert(0, str(ROOT))
 |-------|-----------------|
 | Classes / order | `CLASS_NAMES = ["dentin", "enamel", "pulp"]` |
 | Checkpoint | `slm/resolution_best_densenet_model.pth` |
-| Train data | `segmented_dental_adiography/{train,valid,test}/` |
+| Train data | `segmented_dental_adiography/{train,valid,test}/` (train 604 / valid 264 / test 241) |
+| Training recipe | AdamW; LR 1e-4 backbone / 1e-3 head; batch 16; max 30 epochs; see `docs/usage/training.rst` |
+| Augmentation | Train only: flip, ±15° rotation, random crop/zoom, jitter, affine, random erasing |
 | External tests | `image-testing/{dentin,enamel,pulp}_test/` |
 | Metrics | Precision, Recall, Accuracy, F1 (same formulas as evaluate script) |
 | ROC / AUC | One-vs-rest curves; `python main.py --roc` |

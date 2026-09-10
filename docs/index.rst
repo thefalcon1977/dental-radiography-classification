@@ -18,6 +18,9 @@ Classes (index order): ``0 = dentin``, ``1 = enamel``, ``2 = pulp``.
 
 Default inference checkpoint: ``slm/resolution_best_densenet_model.pth``.
 
+Training recipe (AdamW, batch size 16, max 30 epochs, train 604 / valid 264 /
+test 241, augmentation on train only): see :doc:`usage/training`.
+
 CLI
 ---
 

@@ -88,6 +88,51 @@ python main.py --train
 
 ![ماتریس درهم‌ریختگی — مجموعه تست](confusion_matrix.png)
 
+### تنظیمات نهایی مدل
+
+مقادیر پیش‌فرض در `densnet.train_runner.run_training`:
+
+| تنظیم | مقدار |
+|--------|--------|
+| Optimizer | AdamW (`weight_decay=1e-4`) |
+| Learning Rate | `1e-4` برای بدنه شبکه؛ `1e-3` برای لایه طبقه‌بند |
+| Batch Size | 16 |
+| تعداد Epoch | حداکثر ۳۰ |
+| Early stopping | ۷ اپیاک بدون بهبود دقت اعتبارسنجی |
+| زمان‌بند LR | ReduceLROnPlateau روی loss اعتبارسنجی (factor=0.5، patience=3) |
+| Loss | CrossEntropyLoss وزن‌دار |
+| Gradient clip | حداکثر نرم ۱.۰ |
+| Backbone | DenseNet121 پیش‌آموزش‌دیده روی ImageNet، سر سه‌کلاسه |
+
+### تقسیم Train و Validation
+
+اسکریپت آموزش **یک مجموعه ۵۴۰ تایی را خودش به Train/Validation تقسیم نمی‌کند**. پوشه‌های از پیش جدا شده روی دیسک خوانده می‌شوند.
+
+| بخش | عاج (dentin) | مینا (enamel) | پالپ (pulp) | مجموع | سهم |
+|------|--------------|---------------|-------------|-------|------|
+| Train | ۲۳۹ | ۱۹۷ | ۱۶۸ | **۶۰۴** | ۶۹٫۶٪ از train+valid |
+| Validation | ۸۸ | ۹۴ | ۸۲ | **۲۶۴** | ۳۰٫۴٪ از train+valid |
+| Test | ۸۰ | ۸۰ | ۸۱ | **۲۴۱** | خارج از برازش مدل |
+| **همه** | ۴۰۷ | ۳۷۱ | ۳۳۱ | **۱۱۰۹** | |
+
+نسبت Train به Validation میان **۸۶۸** تصویر مرحله آموزش حدود **۷۰٪ : ۳۰٪** است. پوشه `image-testing/` (۷۵ تصویر در هر کلاس) مجموعه خارجی جداگانه‌ای است.
+
+### Data Augmentation
+
+فقط روی Train اعمال می‌شود (`densnet.transforms.train_transform`). Validation و Test فقط Resize ۲۵۶، CenterCrop ۲۲۴ و نرمال‌سازی ImageNet دارند (بدون Flip، Rotation یا Jitter).
+
+| تبدیل | تنظیم |
+|--------|--------|
+| Resize | ۲۵۶×۲۵۶ |
+| Random resized crop (زوم / برش) | ۲۲۴×۲۲۴، مقیاس ۰٫۸ تا ۱٫۰ |
+| Horizontal flip | احتمال ۰٫۵ |
+| Vertical flip | احتمال ۰٫۳ |
+| Rotation | ±۱۵ درجه |
+| Color jitter | روشنایی ۰٫۳، کنتراست ۰٫۳، اشباع ۰٫۳، فام ۰٫۱ |
+| Affine | جابه‌جایی ۱۰٪، مقیاس ۰٫۹ تا ۱٫۱ |
+| Random erasing | احتمال ۰٫۲، مساحت ۰٫۰۲ تا ۰٫۳۳ |
+| Normalize | میانگین و انحراف‌معیار ImageNet |
+
 ## تشخیص (تصویر کامل)
 
 اسکن تعاملی با پنجره لغزان و کادرهای رنگی:

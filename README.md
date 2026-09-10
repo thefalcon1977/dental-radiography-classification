@@ -88,6 +88,51 @@ Saves the best checkpoint and writes training/confusion plots:
 
 ![Confusion matrix — test set](confusion_matrix.png)
 
+### Final hyperparameters
+
+Defaults in `densnet.train_runner.run_training`:
+
+| Setting | Value |
+|--------|--------|
+| Optimizer | AdamW (`weight_decay=1e-4`) |
+| Learning rate | `1e-4` (backbone), `1e-3` (classifier head) |
+| Batch size | 16 |
+| Epochs | 30 maximum |
+| Early stopping | 7 epochs with no improvement in validation accuracy |
+| LR scheduler | ReduceLROnPlateau on validation loss (factor 0.5, patience 3) |
+| Loss | Weighted CrossEntropyLoss |
+| Gradient clip | max norm 1.0 |
+| Backbone | DenseNet121, ImageNet-pretrained, 3-class head |
+
+### Train / validation split
+
+The trainer does **not** randomly split a pool of 540 (or any) images. It loads three folders that are already split on disk.
+
+| Split | Dentin | Enamel | Pulp | Total | Share |
+|-------|--------|--------|------|-------|--------|
+| Train | 239 | 197 | 168 | **604** | 69.6% of train+valid |
+| Validation | 88 | 94 | 82 | **264** | 30.4% of train+valid |
+| Test | 80 | 80 | 81 | **241** | held out of fitting |
+| **All** | 407 | 371 | 331 | **1109** | |
+
+Train : valid among the **868** training-time images is about **70% : 30%**. `image-testing/` (75 images per class) is a separate external set.
+
+### Data augmentation
+
+Applied **only** on the train split (`densnet.transforms.train_transform`). Val and test use resize 256 + center crop 224 + ImageNet normalize (no flip, rotation, or jitter).
+
+| Transform | Setting |
+|-----------|---------|
+| Resize | 256×256 |
+| Random resized crop (zoom/crop) | 224×224, scale 0.8–1.0 |
+| Horizontal flip | p = 0.5 |
+| Vertical flip | p = 0.3 |
+| Rotation | ±15° |
+| Color jitter | brightness 0.3, contrast 0.3, saturation 0.3, hue 0.1 |
+| Affine | translate 10%, scale 0.9–1.1 |
+| Random erasing | p = 0.2, area 0.02–0.33 |
+| Normalize | ImageNet mean/std |
+
 ## Detection (Full Image)
 
 Interactive sliding-window scan with colored boxes:

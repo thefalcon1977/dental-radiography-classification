@@ -71,8 +71,11 @@ Use `densnet.transforms.eval_transform()` / `train_transform()` — match that c
 - Loop helpers: `densnet.train_loop.train_epoch` / `validate`
 - CLI: `python main.py --train`
 - Dataset folders: `segmented_dental_adiography/{train,valid,test}/{dentin,enamel,pulp}/`
+- Split is **folder-based** (not an in-code 540-image split). Current counts: train 604, valid 264 (~70/30 of train+valid), test 241
+- Optimizer: AdamW (`weight_decay=1e-4`); LR `1e-4` backbone, `1e-3` classifier; batch size 16; max 30 epochs; early stopping patience 7 on val acc
+- Scheduler: `ReduceLROnPlateau` on val loss (factor 0.5, patience 3)
 - Save **best** checkpoint by validation accuracy
-- Keep augmentation on train only; val/test use eval transform
+- Keep augmentation on train only (`train_transform`: flip, ±15° rotation, random resized crop/zoom, color jitter, affine, random erasing); val/test use eval transform
 
 ## Performance
 - Use `torch.no_grad()` for all inference

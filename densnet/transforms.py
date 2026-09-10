@@ -20,7 +20,13 @@ def eval_transform() -> transforms.Compose:
 
 
 def train_transform() -> transforms.Compose:
-    """Augmented transform used only during training."""
+    """Augmented transform used only during training.
+
+    After a 256x256 resize: random resized crop to 224 (scale 0.8-1.0, a
+    zoom/crop), horizontal flip (p=0.5), vertical flip (p=0.3), rotation
+    +/-15 degrees, color jitter, affine translate (10%) and scale (0.9-1.1),
+    ImageNet normalize, then random erasing (p=0.2).
+    """
     return transforms.Compose(
         [
             transforms.Resize((256, 256)),
