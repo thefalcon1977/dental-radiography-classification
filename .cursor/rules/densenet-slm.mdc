@@ -57,6 +57,14 @@ Use `densnet.transforms.eval_transform()` / `train_transform()` — match that c
 - One-vs-rest TP/FP/TN/FN per class
 - Formulas: Precision, Recall, Accuracy, F1 (safe div → `0.0`)
 
+## ROC / AUC
+- `densnet.roc_auc.run_roc_auc()`
+- CLI: `python main.py --roc`
+- Re-score `image-testing/{class}_test/` with `eval_transform()` (do not use Resize-only 224)
+- One-vs-rest ROC per class from softmax columns `prob_dentin` / `prob_enamel` / `prob_pulp`
+- Write under `test_predictions/`: `multiclass_probabilities.csv`, `roc_curve_{class}.csv`, `one_vs_rest_auc_results.csv`, `roc_auc_summary.csv`, `one_vs_rest_roc_curves.png`
+- Do not add pandas; use `csv` + numpy + `sklearn.metrics`
+
 ## Training
 - Pipeline: `densnet.train_runner.run_training()`
 - Dataset: `densnet.dataset.DentalRadiographyDataset`
@@ -68,7 +76,7 @@ Use `densnet.transforms.eval_transform()` / `train_transform()` — match that c
 
 ## Performance
 - Use `torch.no_grad()` for all inference
-- `model.eval()` before predict/detect/evaluate
+- `model.eval()` before predict/detect/evaluate/roc
 - Batch when easy; single-image loops are OK for small test folders (~75 imgs)
 
 ## When Changing Models

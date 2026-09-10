@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "docs/**"
+      - "densnet/**"
+      - "main.py"
       - "*.py"
       - "requirements.txt"
       - ".github/workflows/docs.yml"

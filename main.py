@@ -9,6 +9,7 @@ Examples:
   python main.py --predict all
   python main.py --predict dentin
   python main.py --evaluate
+  python main.py --roc
   python main.py --detect --image path/to/xray.png
 """
 
@@ -41,6 +42,12 @@ def _cmd_evaluate() -> None:
     run_evaluation()
 
 
+def _cmd_roc() -> None:
+    from densnet.roc_auc import run_roc_auc
+
+    run_roc_auc()
+
+
 def _cmd_detect(image: str | None) -> None:
     from densnet.detect import run_detect_cli
 
@@ -63,6 +70,7 @@ examples:
   python main.py --predict all
   python main.py --predict enamel
   python main.py --evaluate
+  python main.py --roc
   python main.py --detect
   python main.py --detect --image radiograph.png
 """,
@@ -84,6 +92,11 @@ examples:
         "--evaluate",
         action="store_true",
         help="Compute Precision/Recall/Accuracy/F1 from prediction CSVs",
+    )
+    action.add_argument(
+        "--roc",
+        action="store_true",
+        help="One-vs-rest ROC curves and AUC on image-testing/",
     )
     action.add_argument(
         "--detect",
@@ -112,6 +125,8 @@ def main(argv: list[str] | None = None) -> None:
         _cmd_predict(args.predict)
     elif args.evaluate:
         _cmd_evaluate()
+    elif args.roc:
+        _cmd_roc()
     elif args.detect:
         _cmd_detect(args.image)
 

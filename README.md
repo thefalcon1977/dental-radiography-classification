@@ -8,6 +8,7 @@ Classify dental tissue in radiography images into **dentin**, **enamel**, and **
 - Run sliding-window detection on full radiographs
 - Batch-predict held-out test folders (`dentin` / `enamel` / `pulp`)
 - Compute Precision, Recall, Accuracy, and F1 from prediction CSVs
+- Compute one-vs-rest ROC curves and AUC on held-out test folders
 
 ## Requirements
 
@@ -176,6 +177,22 @@ Writes:
 
 **Overall accuracy:** 92.44%
 
+## ROC / AUC
+
+Score all three `image-testing/{class}_test/` folders and compute one-vs-rest ROC curves (each class vs the other two). Uses the same ImageNet `eval_transform()` as `--predict`. This **re-runs inference** because it needs all three softmax probabilities, not only `prob_positive`.
+
+```bash
+python main.py --roc
+```
+
+Writes under `test_predictions/`:
+
+- `multiclass_probabilities.csv`
+- `roc_curve_dentin.csv` / `roc_curve_enamel.csv` / `roc_curve_pulp.csv`
+- `one_vs_rest_auc_results.csv`
+- `roc_auc_summary.csv` (macro and weighted OvR AUC)
+- `one_vs_rest_roc_curves.png`
+
 ## Typical Workflow
 
 ```bash
@@ -183,6 +200,7 @@ python main.py --help
 python main.py --train
 python main.py --predict all
 python main.py --evaluate
+python main.py --roc
 python main.py --detect --image path/to/xray.png
 ```
 
@@ -191,6 +209,7 @@ python main.py --detect --image path/to/xray.png
 - Device is chosen automatically: CUDA → MPS → CPU
 - Predictions expect images as `.png` / `.jpg` / `.jpeg`
 - Re-run `--predict` before `--evaluate` if you change the model checkpoint
+- `--roc` re-scores `image-testing/` (it does not reuse the `--predict` CSVs)
 
 ## Development
 

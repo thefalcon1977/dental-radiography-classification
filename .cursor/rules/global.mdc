@@ -35,6 +35,7 @@ CLASS_NAMES = ["dentin", "enamel", "pulp"]  # 0, 1, 2
 | `predict_batch.py` | folder → CSV predictions |
 | `detect.py` | sliding-window detection |
 | `metrics.py` | Precision / Recall / Accuracy / F1 |
+| `roc_auc.py` | One-vs-rest ROC curves and AUC |
 | `train_loop.py` | `train_epoch` / `validate` |
 | `train_runner.py` | full train → test → plots pipeline |
 
@@ -44,6 +45,7 @@ python main.py --help
 python main.py --train
 python main.py --predict all|dentin|enamel|pulp
 python main.py --evaluate
+python main.py --roc
 python main.py --detect [--image PATH]
 ```
 

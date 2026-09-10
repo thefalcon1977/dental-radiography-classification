@@ -26,3 +26,5 @@ Writes:
 * ``test_predictions/evaluation_report.txt``
 
 See the repository ``README.md`` for the latest external-test summary table.
+
+For ROC curves and AUC (all three softmax probabilities), see :doc:`roc`.

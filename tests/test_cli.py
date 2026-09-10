@@ -43,6 +43,13 @@ def test_evaluate_dispatches(monkeypatch: pytest.MonkeyPatch) -> None:
     assert called == [True]
 
 
+def test_roc_dispatches(monkeypatch: pytest.MonkeyPatch) -> None:
+    called: list[bool] = []
+    monkeypatch.setattr("main._cmd_roc", lambda: called.append(True))
+    main(["--roc"])
+    assert called == [True]
+
+
 def test_predict_all_runs_each_class(monkeypatch: pytest.MonkeyPatch) -> None:
     seen: list[str] = []
     monkeypatch.setattr(

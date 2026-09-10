@@ -33,10 +33,21 @@ Run
    python main.py --predict enamel
    python main.py --predict pulp
 
-=======  ==============================  =========================================
-Command  Input                           Output
-=======  ==============================  =========================================
-``--predict dentin``   ``image-testing/dentin_test/``  ``test_predictions/dentin_test_predictions.csv``
-``--predict enamel``   ``image-testing/enamel_test/``  ``test_predictions/enamel_test_predictions.csv``
-``--predict pulp``     ``image-testing/pulp_test/``    ``test_predictions/pulp_test_predictions.csv``
-=======  ==============================  =========================================
+.. list-table::
+   :header-rows: 1
+   :widths: 25 35 40
+
+   * - Command
+     - Input
+     - Output
+   * - ``--predict dentin``
+     - ``image-testing/dentin_test/``
+     - ``test_predictions/dentin_test_predictions.csv``
+   * - ``--predict enamel``
+     - ``image-testing/enamel_test/``
+     - ``test_predictions/enamel_test_predictions.csv``
+   * - ``--predict pulp``
+     - ``image-testing/pulp_test/``
+     - ``test_predictions/pulp_test_predictions.csv``
+
+For one-vs-rest ROC/AUC (all three class probabilities), see :doc:`roc`.

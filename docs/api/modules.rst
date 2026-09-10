@@ -35,6 +35,9 @@ Package
 .. automodule:: densnet.metrics
    :members:
 
+.. automodule:: densnet.roc_auc
+   :members:
+
 .. automodule:: densnet.train_loop
    :members:
 

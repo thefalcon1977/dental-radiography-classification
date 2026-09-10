@@ -22,7 +22,8 @@ docs/
 │   ├── training.rst
 │   ├── detection.rst
 │   ├── prediction.rst
-│   └── evaluation.rst
+│   ├── evaluation.rst
+│   └── roc.rst
 ├── api/
 │   └── modules.rst           # autodoc stubs
 └── _static/                  # optional: confusion_matrix.png, training_history.png
@@ -75,6 +76,7 @@ sys.path.insert(0, str(ROOT))
 | Train data | `segmented_dental_adiography/{train,valid,test}/` |
 | External tests | `image-testing/{dentin,enamel,pulp}_test/` |
 | Metrics | Precision, Recall, Accuracy, F1 (same formulas as evaluate script) |
+| ROC / AUC | One-vs-rest curves; `python main.py --roc` |
 | Plots | Reuse `training_history.png`, `confusion_matrix.png` via `_static/` or repo-root links |
 
 Document **CLI usage and public functions**, not private training loops line-by-line.

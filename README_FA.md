@@ -8,6 +8,7 @@
 - تشخیص با پنجره لغزان روی رادیوگراف کامل
 - پیش‌بینی دسته‌ای پوشه‌های تست (`dentin` / `enamel` / `pulp`)
 - محاسبه Precision، Recall، Accuracy و F1 از فایل‌های CSV پیش‌بینی
+- محاسبه منحنی‌های ROC یک‌در‌برابر‌بقیه و AUC روی پوشه‌های تست
 
 ## پیش‌نیازها
 
@@ -176,6 +177,22 @@ python main.py --evaluate
 
 **دقت کلی (Overall accuracy):** 92.44%
 
+## ROC / AUC
+
+هر سه پوشه `image-testing/{class}_test/` را دوباره امتیازدهی می‌کند و منحنی ROC یک‌در‌برابر‌بقیه را می‌سازد. پیش‌پردازش همان `eval_transform()` است. این فرمان **استنتاج را دوباره اجرا می‌کند** چون به هر سه احتمال softmax نیاز دارد، نه فقط `prob_positive`.
+
+```bash
+python main.py --roc
+```
+
+خروجی‌ها در `test_predictions/`:
+
+- `multiclass_probabilities.csv`
+- `roc_curve_dentin.csv` / `roc_curve_enamel.csv` / `roc_curve_pulp.csv`
+- `one_vs_rest_auc_results.csv`
+- `roc_auc_summary.csv` (AUC ماکرو و وزن‌دار OvR)
+- `one_vs_rest_roc_curves.png`
+
 ## گردش کار پیشنهادی
 
 ```bash
@@ -183,6 +200,7 @@ python main.py --help
 python main.py --train
 python main.py --predict all
 python main.py --evaluate
+python main.py --roc
 python main.py --detect --image path/to/xray.png
 ```
 
@@ -191,6 +209,7 @@ python main.py --detect --image path/to/xray.png
 - دستگاه به‌صورت خودکار انتخاب می‌شود: CUDA → MPS → CPU
 - پیش‌بینی تصاویر `.png` / `.jpg` / `.jpeg` را می‌پذیرد
 - اگر چک‌پوینت مدل را عوض کردید، قبل از `--evaluate` دوباره `--predict` را اجرا کنید
+- `--roc` پوشه `image-testing/` را دوباره امتیازدهی می‌کند (از CSVهای `--predict` استفاده نمی‌کند)
 
 ## توسعه
 
