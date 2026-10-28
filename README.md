@@ -110,12 +110,12 @@ The trainer does **not** randomly split a pool of 540 (or any) images. It loads 
 
 | Split | Dentin | Enamel | Pulp | Total | Share |
 |-------|--------|--------|------|-------|--------|
-| Train | 239 | 197 | 168 | **604** | 69.6% of train+valid |
-| Validation | 88 | 94 | 82 | **264** | 30.4% of train+valid |
+| Train | 186 | 217 | 180 | **583** | 68.8% of train+valid |
+| Validation | 88 | 94 | 82 | **264** | 31.2% of train+valid |
 | Test | 80 | 80 | 81 | **241** | held out of fitting |
-| **All** | 407 | 371 | 331 | **1109** | |
+| **All** | 354 | 391 | 343 | **1088** | |
 
-Train : valid among the **868** training-time images is about **70% : 30%**. `image-testing/` (75 images per class) is a separate external set.
+Train : valid among the **847** training-time images is about **69% : 31%**. `image-testing/` (75 images per class) is a separate external set.
 
 ### Data augmentation
 
